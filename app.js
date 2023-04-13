@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
-const { MONGODB_URL, PORT } = require('./config');
+const { MONGODB_URI, PORT } = require('./config');
 
 const app = express();
 
@@ -26,7 +26,7 @@ app.use('*', (req, res) => {
 
 const startServer = async () => {
   try {
-    await mongoose.connect(MONGODB_URL, {
+    await mongoose.connect(MONGODB_URI, {
       useNewUrlParser: true,
     });
     console.log('Подключено к MongoDB');
