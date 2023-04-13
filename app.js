@@ -3,8 +3,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
-
-const { PORT = 3000 } = process.env;
+const { MONGODB_URL, PORT } = require('./config');
 
 const app = express();
 
@@ -25,6 +24,17 @@ app.use('*', (req, res) => {
   });
 });
 
-mongoose.connect('mongodb://localhost:27017/mestodb');
+const startServer = async () => {
+  try {
+    await mongoose.connect(MONGODB_URL, {
+      useNewUrlParser: true,
+    });
+    console.log('Подключено к MongoDB');
+    await app.listen(PORT);
+    console.log(`Сервер запущен на порте: ${PORT}`);
+  } catch (err) {
+    console.log('Ошибка подключения к MongoDB', err);
+  }
+};
 
-app.listen(PORT);
+startServer();

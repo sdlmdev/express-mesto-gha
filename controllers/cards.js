@@ -12,7 +12,9 @@ const createCard = async (req, res, next) => {
         message: 'Переданы некорректные данные при создании карточки.',
       }));
     } else {
-      next(err);
+      next(res.status(500).send({
+        message: 'На сервере произошла ошибка',
+      }));
     }
   }
 };
@@ -23,7 +25,9 @@ const getCards = async (req, res, next) => {
 
     res.send(cards);
   } catch (err) {
-    next(err);
+    next(res.status(500).send({
+      message: 'На сервере произошла ошибка',
+    }));
   }
 };
 
@@ -44,7 +48,9 @@ const deleteCard = async (req, res, next) => {
         message: 'Переданы некорректные данные.',
       });
     } else {
-      next(err);
+      next(res.status(500).send({
+        message: 'На сервере произошла ошибка',
+      }));
     }
   }
 };
@@ -80,7 +86,9 @@ const handleCardLike = async (req, res, next) => {
         message: 'Переданы некорректные данные для постановки/снятии лайка.',
       });
     } else {
-      next(err);
+      next(res.status(500).send({
+        message: 'На сервере произошла ошибка',
+      }));
     }
   }
 };

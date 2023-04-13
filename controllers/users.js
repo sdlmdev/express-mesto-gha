@@ -6,7 +6,9 @@ const getUsers = async (req, res, next) => {
 
     res.send(users);
   } catch (err) {
-    next(err);
+    next(res.status(500).send({
+      message: 'На сервере произошла ошибка',
+    }));
   }
 };
 
@@ -27,7 +29,9 @@ const getUserById = async (req, res, next) => {
         message: 'Переданы некорректные данные.',
       });
     } else {
-      next(err);
+      next(res.status(500).send({
+        message: 'На сервере произошла ошибка',
+      }));
     }
   }
 };
@@ -44,7 +48,9 @@ const createUser = async (req, res, next) => {
         message: 'Переданы некорректные данные при создании пользователя.',
       }));
     } else {
-      next(err);
+      next(res.status(500).send({
+        message: 'На сервере произошла ошибка',
+      }));
     }
   }
 };
@@ -76,11 +82,12 @@ const editProfile = async (req, res, next) => {
   } catch (err) {
     if (err.name === 'ValidationError') {
       res.status(400).send({
-        message: `Переданы некорректные данные при обновлении
-        ${req.path === '/me/avatar' ? 'аватара' : 'профиля'}.`,
+        message: `Переданы некорректные данные при обновлении ${req.path === '/me/avatar' ? 'аватара' : 'профиля'}.`,
       });
     } else {
-      next(err);
+      next(res.status(500).send({
+        message: 'На сервере произошла ошибка',
+      }));
     }
   }
 };
