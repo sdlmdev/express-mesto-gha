@@ -31,15 +31,15 @@ const deleteCard = async (req, res, next) => {
   try {
     const card = await Card.findByIdAndDelete(req.params.id);
 
-    if (!card) {
+    res.send(card);
+  } catch (err) {
+    if (err.name === 'CastError') {
       res.status(404).send({
         message: 'Карточка с указанным _id не найдена.',
       });
+    } else {
+      next(err);
     }
-
-    res.send(card);
-  } catch (err) {
-    next(err);
   }
 };
 
