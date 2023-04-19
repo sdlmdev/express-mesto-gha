@@ -1,8 +1,13 @@
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const { errors } = require('celebrate');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
+const { login, createUser } = require('./controllers/users');
+const handleError = require('./middlewares/handleError');
+const auth = require('./middlewares/auth');
 
 const {
   MONGODB_URI = 'mongodb://localhost:27017/mestodb',
@@ -11,15 +16,15 @@ const {
 
 const app = express();
 
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use((req, res, next) => {
-  req.user = {
-    _id: '6432d4a409181a13884ff832',
-  };
 
-  next();
-});
+app.post('/signin', login);
+app.post('/signup', createUser);
+
+app.use(auth);
+
 app.use('/cards', cardsRouter);
 app.use('/users', usersRouter);
 app.use('*', (req, res) => {
@@ -27,6 +32,8 @@ app.use('*', (req, res) => {
     message: 'Запрашиваемый адрес не найден.',
   });
 });
+app.use(errors());
+app.use(handleError);
 
 const startServer = async () => {
   try {
