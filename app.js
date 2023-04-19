@@ -8,6 +8,7 @@ const cardsRouter = require('./routes/cards');
 const { login, createUser } = require('./controllers/users');
 const handleError = require('./middlewares/handleError');
 const auth = require('./middlewares/auth');
+const { validationLogin, validationCreateUser } = require('./middlewares/validation');
 
 const {
   MONGODB_URI = 'mongodb://localhost:27017/mestodb',
@@ -20,8 +21,8 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signin', validationLogin, login);
+app.post('/signup', validationCreateUser, createUser);
 
 app.use(auth);
 
