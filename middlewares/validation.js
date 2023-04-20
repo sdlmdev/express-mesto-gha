@@ -4,7 +4,7 @@ const URL_REGEXP = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9(
 
 module.exports.validationCardId = celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string().required().hex().length(24),
+    id: Joi.string().hex().length(24),
   }),
 });
 
