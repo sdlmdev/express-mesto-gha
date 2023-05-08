@@ -9,6 +9,8 @@ const { login, createUser } = require('./controllers/users');
 const handleError = require('./middlewares/handleError');
 const auth = require('./middlewares/auth');
 const { validationLogin, validationCreateUser } = require('./middlewares/validation');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+const { NotFoundError } = require('./errors/NotFoundError');
 
 const {
   MONGODB_URI = 'mongodb://localhost:27017/mestodb',
@@ -16,25 +18,6 @@ const {
 } = process.env;
 
 const app = express();
-
-app.use(cookieParser());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-app.post('/signin', validationLogin, login);
-app.post('/signup', validationCreateUser, createUser);
-
-app.use(auth);
-
-app.use('/cards', cardsRouter);
-app.use('/users', usersRouter);
-app.use('*', (req, res) => {
-  res.status(404).send({
-    message: 'Запрашиваемый адрес не найден.',
-  });
-});
-app.use(errors());
-app.use(handleError);
 
 const startServer = async () => {
   try {
@@ -49,4 +32,24 @@ const startServer = async () => {
   }
 };
 
+app.use(cookieParser());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 startServer();
+
+app.use(requestLogger);
+
+app.post('/signin', validationLogin, login);
+app.post('/signup', validationCreateUser, createUser);
+
+app.use(auth);
+
+app.use('/cards', cardsRouter);
+app.use('/users', usersRouter);
+app.use('*', () => {
+  throw new NotFoundError('Запрашиваемый адрес не найден.');
+});
+app.use(errorLogger);
+app.use(errors());
+app.use(handleError);
