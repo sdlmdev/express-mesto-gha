@@ -29,6 +29,6 @@
 
 ## Установка и запуск проекта:
 * `git clone https://github.com/sdlmdev/express-mesto-gha` - клонирует репозиторий
-* `npm install` - установить зависимости
+* `npm install` - устанавливает зависимости
 * `npm run start` — запускает сервер   
 * `npm run dev` — запускает сервер с hot-reload
