@@ -1,9 +1,11 @@
+const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
 const ConflictError = require('../errors/ConflictError');
+const config = require('../config');
 
 const getUsers = async (req, res, next) => {
   try {
@@ -33,7 +35,7 @@ const getUserById = async (req, res, next) => {
 
     res.send(user);
   } catch (err) {
-    if (err.name === 'CastError') {
+    if (err instanceof mongoose.Error.CastError) {
       next(new BadRequestError('Переданы некорректные данные.'));
     } else {
       next(err);
@@ -60,7 +62,7 @@ const createUser = async (req, res, next) => {
   } catch (err) {
     if (err.code === 11000) {
       next(new ConflictError('Пользователь с таким email уже зарегистрирован'));
-    } else if (err.name === 'ValidationError') {
+    } else if (err instanceof mongoose.Error.ValidationError) {
       next(new BadRequestError('Переданы некорректные данные при создании пользователя.'));
     } else {
       next(err);
@@ -72,12 +74,12 @@ const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const user = await User.findUserByCredentials(email, password);
-    const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+    const token = jwt.sign(
+      { _id: user._id },
+      config.JWT_SECRET,
+      { expiresIn: '7d' },
+    );
 
-    res.cookie('jwt', token, {
-      maxAge: 3600000 * 24 * 7,
-      httpOnly: true,
-    });
     res.send({ token });
   } catch (err) {
     next(err);
@@ -107,7 +109,7 @@ const editProfile = async (req, res, next) => {
 
     res.send(user);
   } catch (err) {
-    if (err.name === 'ValidationError') {
+    if (err instanceof mongoose.Error.ValidationError) {
       next(new BadRequestError(
         `Переданы некорректные данные при обновлении ${req.path === '/me/avatar' ? 'аватара' : 'профиля'}.`,
       ));

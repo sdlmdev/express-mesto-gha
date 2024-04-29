@@ -4,7 +4,7 @@ const URL_REGEXP = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9(
 
 module.exports.validationCardId = celebrate({
   params: Joi.object().keys({
-    id: Joi.string().hex().length(24),
+    id: Joi.string().hex().length(24).required(),
   }),
 });
 
@@ -40,13 +40,13 @@ module.exports.validationUserId = celebrate({
 
 module.exports.validationUserInfo = celebrate({
   body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(30),
+    name: Joi.string().min(2).max(30).required(),
+    about: Joi.string().min(2).max(30).required(),
   }),
 });
 
 module.exports.validationAvatar = celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().pattern(URL_REGEXP),
+    avatar: Joi.string().pattern(URL_REGEXP).required(),
   }),
 });
